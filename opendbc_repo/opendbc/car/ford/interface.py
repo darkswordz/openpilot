@@ -36,6 +36,16 @@ class CarInterface(CarInterfaceBase):
     ret.steerAtStandstill = True
     ret.longitudinalTuning.kiBP = [0.]
     ret.longitudinalTuning.kiV = [0.5]
+     # Lateral PID tuning to reduce turn lingering
+    ret.steerRatio = 17.0  # Optional: Slightly increase if steering feels too sharp
+    ret.steerActuatorDelay = 0.08  # Lowered from 0.1 to reduce response lag
+
+    ret.lateralTuning.init('pid')
+    ret.lateralTuning.pid.kpBP = [10., 41.]
+    ret.lateralTuning.pid.kpV = [0.18, 0.275]  # You can reduce this if still jerky
+    ret.lateralTuning.pid.kiBP = [10., 41.]
+    ret.lateralTuning.pid.kiV = [0.008, 0.018]  # Reduce integral to prevent "overshooting" on exit
+    ret.lateralTuning.pid.kf = 0.00015  # Reduce
 
     if not ret.radarUnavailable and DBC[candidate][Bus.radar] == RADAR.DELPHI_MRR:
       # average of 33.3 Hz radar timestep / 4 scan modes = 60 ms
